@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Star Wars - Express</title>
+    <!-- Latest compiled and minified CSS & JS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron text-center">
+            <h1>Hot Restaurant</h1>
+            <h3>Current Reservations and Waiting List</h3>
+            <hr>
+            <a href="/"><button class="btn btn-primary btn-lg"><span
+                        class="fa fa-eye"></span>Home</button></a>
+            <a href="/reserve"><button class="btn btn-danger btn-lg"><span class="fa fa-eye"></span>Make
+                    Reservation</button></a>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3><strong>Current Reservations</strong></h3>
+                    </div>
+                    <div class="card-body" id="append-tableList-here">
+                        <!-- Example Table Entry
+                        <ul class="list-group">
+                            <li class="list-group-item mt-4">
+                                <h2>Table #${tableNumber}</h2>
+                                <hr>
+                                    <h2>ID: ${tableData[i].patronID}</h2>
+                                    <h2>Name: ${tableData[i].patronName}</h2>
+                                    <h2>Email: ${tableData[i].patronEmail}</h2>
+                                    <h2>Phone: ${tableData[i].phoneNumber}</h2>
+                            </li>
+                        </ul> -->
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3><strong>Waiting List</strong></h3>
+                    </div>
+                    <div class="card-body" id="append-waitlist-here">
+                        <!-- Example Waiting List Entry -->
+                        <!-- <ul id="waitingList1" class="list-group">
+                            <li class="list-group-item mt-4">
+                                <h2>Wait List #1</h2>
+                                <hr>
+                                <h2>ID: wait1</h2>
+                                <h2>Name: Joe</h2>
+                                <h2>Email: cbragg9@yahoo.com(opens in new tab)</h2>
+                                <h2>Phone: 3609691852</h2>
+                            </li>
+                        </ul> -->
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container">
+                    <p class="ml-4 mt-4">Control Panel</p>
+                </div>
+                <div class="container ml-4 mt-1 mb-2">
+                    <a href="/tables" id="clear">Clear Table</a>
+                    <span>&nbsp | &nbsp</span>
+                    <a href="/api/tables">API Table Link</a>
+                    <span>&nbsp | &nbsp</span>
+                    <a href="/api/waitlist">API Wait List</a>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            let tableNumber = 1;
+            let waitingNumber = 1;
+            function displayTables(data) {
+                for (let i = 0; i < data.length; i++) {
+                    let newHTML =
+                        `<ul class="list-group">
+                        <li class="list-group-item mt-4">
+                            <h2>Table #${tableNumber}</h2>
+                            <hr>
+                                <h2>ID: ${data[i].patronID}</h2>
+                                <h2>Name: ${data[i].patronName}</h2>
+                                <h2>Email: ${data[i].patronEmail}</h2>
+                                <h2>Phone: ${data[i].phoneNumber}</h2>
+                        </li>
+                    </ul>`
+                    $("#append-tableList-here").append(newHTML);
+                    tableNumber++;
+                }
+            }
+            function displayWaitlist(data) {
+                for (let i = 0; i < data.length; i++) {
+                    let newHTML =
+                        `<ul class="list-group">
+                        <li class="list-group-item mt-4">
+                            <h2>Wait #${waitingNumber}</h2>
+                            <hr>
+                                <h2>ID: ${data[i].patronID}</h2>
+                                <h2>Name: ${data[i].patronName}</h2>
+                                <h2>Email: ${data[i].patronEmail}</h2>
+                                <h2>Phone: ${data[i].phoneNumber}</h2>
+                        </li>
+                    </ul>`
+                    $("#append-waitlist-here").append(newHTML);
+                    waitingNumber++;
+                }
+            }
+            // On launch, display Current Reservations
+            $.get("/api/tables/", function (data) {
+                console.log(data);
+                if (data) {
+                    displayTables(data);
+                }
+            });
+
+            $.get("/api/waitlist/", function (data) {
+                console.log(data);
+                if (data) {
+                    displayWaitlist(data);
+                }
+            });
+
+            $("#clear").on("click", function(event) {
+                $.ajax({
+                    url: '/api/tables',
+                    type: 'DELETE'
+                }).then((data) => {
+                    displayTables(data)
+                });
+
+                $.ajax({
+                    url: '/api/waitlist',
+                    type: 'DELETE'
+                })
+                .then((data) => {
+                    displayWaitlist(data);
+                });;
+            });
+
+        </script>
+</body>
+
+</html>
